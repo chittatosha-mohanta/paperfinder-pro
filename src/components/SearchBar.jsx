@@ -1,4 +1,5 @@
 import { Search } from 'lucide-react'
+import PDFUpload from './PDFUpload'
 
 const YEAR_FILTERS = [
   { label: 'Any Year', value: null },
@@ -12,27 +13,34 @@ export default function SearchBar({ query, setQuery, onSearch, yearFilter, setYe
   return (
     <div style={{ marginBottom: '24px' }}>
 
-      {/* Search Input */}
+      {/* Search Input Row */}
       <div style={{
-        display: 'flex', alignItems: 'center', gap: '0',
+        display: 'flex', alignItems: 'center',
         background: 'var(--surface)', border: '1px solid var(--border)',
-        borderRadius: '14px', padding: '6px 6px 6px 20px',
+        borderRadius: '14px', padding: '6px 6px 6px 16px',
         transition: 'border-color 0.3s',
-      }}
-        onFocus={e => e.currentTarget.style.borderColor = 'rgba(0,229,255,0.4)'}
-        onBlur={e => e.currentTarget.style.borderColor = 'var(--border)'}
-      >
-        <Search size={18} color="var(--muted)" style={{ marginRight: '12px', flexShrink: 0 }} />
+        gap: '8px',
+      }}>
+        {/* Search icon */}
+        <Search size={18} color="var(--muted)" style={{ flexShrink: 0 }} />
+
+        {/* Text input */}
         <input
           style={{
             flex: 1, background: 'none', border: 'none', outline: 'none',
             color: 'var(--text)', fontSize: '16px', padding: '10px 0',
+            minWidth: 0,
           }}
           placeholder="Search by topic, title, author or paste a DOI..."
           value={query}
           onChange={e => setQuery(e.target.value)}
           onKeyDown={e => e.key === 'Enter' && onSearch()}
         />
+
+        {/* Paperclip PDF upload button */}
+        <PDFUpload onSearch={onSearch} />
+
+        {/* Search button */}
         <button
           onClick={() => onSearch()}
           disabled={!query.trim()}

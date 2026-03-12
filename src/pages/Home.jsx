@@ -52,15 +52,12 @@ export default function Home() {
       <div style={{ position: 'relative', zIndex: 1 }}>
 
         {/* Top nav */}
-        <div style={{
-          display: 'flex', justifyContent: 'flex-end', marginBottom: '24px',
-        }}>
+        <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '24px' }}>
           <Link to="/saved" style={{
             display: 'flex', alignItems: 'center', gap: '8px',
             background: 'var(--surface)', border: '1px solid var(--border)',
             borderRadius: '10px', padding: '8px 16px',
-            color: 'var(--muted)', fontSize: '13px',
-            transition: 'all 0.2s',
+            color: 'var(--muted)', fontSize: '13px', transition: 'all 0.2s',
           }}
             onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(0,229,255,0.3)'; e.currentTarget.style.color = 'var(--accent)' }}
             onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.color = 'var(--muted)' }}
@@ -88,8 +85,7 @@ export default function Home() {
           }}>
             <span style={{
               width: '6px', height: '6px', borderRadius: '50%',
-              background: 'var(--accent)',
-              animation: 'pulse 2s infinite',
+              background: 'var(--accent)', animation: 'pulse 2s infinite',
             }} />
             FREE RESEARCH ACCESS
           </div>
@@ -123,10 +119,7 @@ export default function Home() {
                 fontSize: '11px', fontFamily: 'JetBrains Mono, monospace',
                 color: 'var(--muted)',
               }}>
-                <div style={{
-                  width: '5px', height: '5px', borderRadius: '50%',
-                  background: 'var(--accent3)',
-                }} />
+                <div style={{ width: '5px', height: '5px', borderRadius: '50%', background: 'var(--accent3)' }} />
                 {s}
               </div>
             ))}
@@ -143,6 +136,8 @@ export default function Home() {
           💡 Finds <strong>legally free</strong> versions — author preprints,
           open-access journals, and institutional repositories. No paywalls bypassed.
         </div>
+
+        
 
         {/* Search bar */}
         <SearchBar
@@ -176,10 +171,8 @@ export default function Home() {
             <div style={{
               width: '14px', height: '14px',
               border: '2px solid var(--border)',
-              borderTopColor: 'var(--accent)',
-              borderRadius: '50%',
-              animation: 'spin 0.7s linear infinite',
-              flexShrink: 0,
+              borderTopColor: 'var(--accent)', borderRadius: '50%',
+              animation: 'spin 0.7s linear infinite', flexShrink: 0,
             }} />
             Searching OpenAlex — 250M+ research works...
           </div>
@@ -207,12 +200,8 @@ export default function Home() {
         {hasSearched && !isLoading && results.length === 0 && !error && (
           <div style={{ textAlign: 'center', padding: '60px 24px' }}>
             <div style={{ fontSize: '48px', marginBottom: '16px' }}>🔍</div>
-            <h3 style={{ fontSize: '18px', fontWeight: '700', marginBottom: '8px' }}>
-              No results found
-            </h3>
-            <p style={{ color: 'var(--muted)', fontSize: '14px' }}>
-              Try different keywords or broader terms.
-            </p>
+            <h3 style={{ fontSize: '18px', fontWeight: '700', marginBottom: '8px' }}>No results found</h3>
+            <p style={{ color: 'var(--muted)', fontSize: '14px' }}>Try different keywords or broader terms.</p>
           </div>
         )}
 
@@ -225,11 +214,7 @@ export default function Home() {
 
         {/* Pagination */}
         {!isLoading && results.length > 0 && (
-          <Pagination
-            page={page}
-            total={total}
-            onPageChange={handlePageChange}
-          />
+          <Pagination page={page} total={total} onPageChange={handlePageChange} />
         )}
       </div>
 
