@@ -1,9 +1,11 @@
-// Search logic hook — used by the Home page
 import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { searchPapers, searchByDOI, normalizePaper } from '../api/openAlex'
 import { detectInput } from '../utils/detectInput'
 import useStore from '../store/useStore'
+import { useAuth } from './useAuth'
+import { db } from '../firebase'
+import { collection, addDoc, serverTimestamp, query as firestoreQuery, where, getDocs, updateDoc } from 'firebase/firestore'
 
 export default function useSearch() {
   const [query, setQuery] = useState('')
@@ -11,6 +13,7 @@ export default function useSearch() {
   const [page, setPage] = useState(1)
   const [yearFilter, setYearFilter] = useState(null)
   const addRecentSearch = useStore(s => s.addRecentSearch)
+  const { user } = useAuth()
 
   const isDOI = detectInput(submittedQuery) === 'doi'
 
@@ -29,11 +32,29 @@ export default function useSearch() {
     enabled: !!submittedQuery,
   })
 
-  function handleSearch(q = query) {
+  async function handleSearch(q = query) {
     if (!q.trim()) return
     setSubmittedQuery(q.trim())
     setPage(1)
     addRecentSearch(q.trim())
+
+    if (user) {
+      try {
+        const historyRef = collection(db, 'users', user.uid, 'searchHistory')
+        const existing = await getDocs(
+          firestoreQuery(historyRef, where('query', '==', q.trim()))
+        )
+        if (!existing.empty) {
+          // Already exists — just move it to top by updating timestamp
+          await updateDoc(existing.docs[0].ref, { createdAt: serverTimestamp() })
+        } else {
+          // New search — add it
+          await addDoc(historyRef, { query: q.trim(), createdAt: serverTimestamp() })
+        }
+      } catch (e) {
+        console.error('Failed to save search history:', e)
+      }
+    }
   }
 
   function handlePageChange(newPage) {
