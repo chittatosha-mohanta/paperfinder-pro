@@ -1,23 +1,19 @@
-import * as pdfjsLib from 'pdfjs-dist'
-
-pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js`
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'https://web-production-4afc.up.railway.app'
 
 export async function extractTextFromPDF(file) {
-  try {
-    const arrayBuffer = await file.arrayBuffer()
-    const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise
-    let fullText = ''
+  const formData = new FormData()
+  formData.append('file', file)
 
-    const pagesToRead = Math.min(3, pdf.numPages)
-    for (let i = 1; i <= pagesToRead; i++) {
-      const page = await pdf.getPage(i)
-      const content = await page.getTextContent()
-      const pageText = content.items.map(item => item.str).join(' ')
-      fullText += pageText + ' '
-    }
+  const response = await fetch(`${BACKEND_URL}/extract-pdf`, {
+    method: 'POST',
+    body: formData,
+  })
 
-    return fullText.trim().slice(0, 600)
-  } catch (error) {
-    throw new Error('Could not read this PDF. Please try a text-based PDF.')
+  const data = await response.json()
+
+  if (!response.ok || !data.success) {
+    throw new Error(data.error || 'Could not extract text from PDF.')
   }
+
+  return data.query
 }
