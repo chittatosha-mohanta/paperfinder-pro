@@ -2,8 +2,8 @@ import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import { useAuth } from "../hooks/useAuth"
 import { db } from "../firebase"
-import { collection, query, orderBy, limit, onSnapshot } from "firebase/firestore"
-import { Search, Bookmark, Plus, LogOut, Clock, FileText } from "lucide-react"
+import { collection, query, orderBy, limit, onSnapshot, doc, deleteDoc } from "firebase/firestore"
+import { Search, Bookmark, Plus, LogOut, Clock, FileText, MessageSquare } from "lucide-react"
 import "./Sidebar.css"
 
 export default function Sidebar({ onNewSearch }) {
@@ -28,6 +28,15 @@ export default function Sidebar({ onNewSearch }) {
   async function handleLogout() {
     await logout()
     navigate("/login")
+  }
+
+  async function handleDeleteHistory(e, id) {
+    e.stopPropagation()
+    try {
+      await deleteDoc(doc(db, "users", user.uid, "searchHistory", id))
+    } catch (err) {
+      console.error("Failed to delete:", err)
+    }
   }
 
   const initials = user?.displayName
@@ -58,6 +67,9 @@ export default function Sidebar({ onNewSearch }) {
         <button className="sidebar-link" onClick={() => navigate("/write-paper")}>
           <FileText size={15} /> Write a Paper
         </button>
+        <button className="sidebar-link" onClick={() => navigate("/chat-pdf")}>
+          <MessageSquare size={15} /> Chat with PDF
+        </button>
         <button className="sidebar-link" onClick={() => navigate("/saved")}>
           <Bookmark size={15} /> Saved Papers
         </button>
@@ -69,14 +81,19 @@ export default function Sidebar({ onNewSearch }) {
           <p className="sidebar-empty">No searches yet</p>
         )}
         {history.map(h => (
-          <button
-            key={h.id}
-            className="sidebar-history-item"
-            onClick={() => onNewSearch(h.query)}
-            title={h.query}
-          >
-            {h.query}
-          </button>
+          <div key={h.id} className="sidebar-history-row">
+            <button
+              className="sidebar-history-item"
+              onClick={() => onNewSearch(h.query)}
+              title={h.query}
+            >
+              {h.query}
+            </button>
+            <button
+              className="sidebar-history-delete"
+              onClick={(e) => handleDeleteHistory(e, h.id)}
+            >✕</button>
+          </div>
         ))}
       </div>
 
