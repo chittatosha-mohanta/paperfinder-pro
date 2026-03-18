@@ -1,9 +1,11 @@
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Bookmark } from 'lucide-react'
 import SearchBar from '../components/SearchBar'
 import PaperCard from '../components/PaperCard'
 import Pagination from '../components/Pagination'
 import EmptyState from '../components/EmptyState'
+import ClarifyModal from '../components/ClarifyModal'
 import useSearch from '../hooks/useSearch'
 import useStore from '../store/useStore'
 import Sidebar from "../components/Sidebar"
@@ -19,6 +21,23 @@ export default function Home() {
   } = useSearch()
 
   const bookmarkCount = useStore(s => s.bookmarks.length)
+
+  // ── Clarify modal state ────────────────────────────────────
+  const [clarifyQuery, setClarifyQuery] = useState(null)  // null = hidden
+
+  // Called when user clicks Search button
+  function handleSearchClick(q = query) {
+    const trimmed = (typeof q === 'string' ? q : query).trim()
+    if (!trimmed) return
+    // Show clarify modal instead of searching immediately
+    setClarifyQuery(trimmed)
+  }
+
+  // Called when user confirms answers in the modal
+  function handleClarifyConfirm(refinedQuery) {
+    setClarifyQuery(null)
+    handleSearch(refinedQuery)
+  }
 
   return (
     <div style={{ display: 'flex', height: '100vh', overflow: 'hidden', background: '#0a0a0f' }}>
@@ -141,11 +160,11 @@ export default function Home() {
             open-access journals, and institutional repositories. No paywalls bypassed.
           </div>
 
-          {/* Search bar */}
+          {/* Search bar — uses handleSearchClick to trigger modal first */}
           <SearchBar
             query={query}
             setQuery={setQuery}
-            onSearch={handleSearch}
+            onSearch={handleSearchClick}
             yearFilter={yearFilter}
             setYearFilter={setYearFilter}
           />
@@ -194,7 +213,7 @@ export default function Home() {
           )}
 
           {/* Empty state */}
-          {!hasSearched && !isLoading && <EmptyState onSearch={handleSearch} />}
+          {!hasSearched && !isLoading && <EmptyState onSearch={handleSearchClick} />}
 
           {/* No results */}
           {hasSearched && !isLoading && results.length === 0 && !error && (
@@ -223,6 +242,15 @@ export default function Home() {
           @keyframes spin  { to{transform:rotate(360deg);} }
         `}</style>
       </div>
+
+      {/* Clarify modal — rendered outside scroll container */}
+      {clarifyQuery && (
+        <ClarifyModal
+          rawQuery={clarifyQuery}
+          onConfirm={handleClarifyConfirm}
+          onClose={() => setClarifyQuery(null)}
+        />
+      )}
     </div>
   )
 }
