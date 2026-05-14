@@ -1,10 +1,7 @@
 # React + Vite
 
 # Demo
-
-
-Uploading paper finder pro.mov…
-
+https://drive.google.com/file/d/1ZYyGaASywqIBPTRb-_10xQd2dj3Sl6P4/view?usp=sharing
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
